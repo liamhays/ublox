@@ -1,3 +1,5 @@
+// This file is where the magic happens. It's also big and complicated :(
+
 #include "ublox_worker_i.h"
 
 #define TAG "UbloxWorker"

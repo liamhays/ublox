@@ -15,7 +15,10 @@ bool gpx_open_file(Storage* storage, GPXFile* gpx, const char* path) {
     // with the file opened, we need to write the intro GPX tags
     const char* gpx_intro =
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-	"<gpx version=\"1.0\">\n"
+	"<gpx version=\"1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+	
+	"xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
+	"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n"
 	"    <name>Paths</name>\n"
 	"    <trk><name>Paths</name><number>1</number><trkseg>\n";
 
@@ -33,9 +36,8 @@ bool gpx_open_file(Storage* storage, GPXFile* gpx, const char* path) {
 }
 
 bool gpx_add_path_point(GPXFile* gpx, double lat, double lon, uint32_t alt) {
-    // GPX is longitude then latitude for some reason
     // TODO: it would be nice to include time
-    FuriString* point = furi_string_alloc_printf("        <trkpt lat=\"%f\" lon=\"%f\"><ele>%lu</ele></trkpt>\n", lon, lat, alt);
+    FuriString* point = furi_string_alloc_printf("        <trkpt lat=\"%f\" lon=\"%f\"><ele>%lu</ele></trkpt>\n", lat, lon, alt);
     if(!storage_file_write(gpx->file, furi_string_get_cstr(point), furi_string_size(point))) {
 	FURI_LOG_E(TAG, "failed to write line to GPX file!");
         return false;
@@ -58,7 +60,7 @@ bool gpx_add_path_point(GPXFile* gpx, double lat, double lon, uint32_t alt) {
 bool gpx_close_file(GPXFile* gpx) {
     const char* gpx_outro =
 	"    </trkseg></trk>\n"
-	"</gpx>\n";
+	"</gpx>";
 
     
     if(!storage_file_write(gpx->file, gpx_outro, strlen(gpx_outro))) {
